@@ -1,12 +1,16 @@
+"use client";
+import { useQuery } from "convex/react";
 import AIChatButton from "./_components/ai-chat-button";
 import CreateNoteButton from "./_components/create-note-button";
 import EmptyNotesView from "./_components/empty-notes-view";
 import NotesLoadingSkeleton from "./_components/notes-loading-skeleton";
+import { api } from "../../../convex/_generated/api";
+import NoteItem from "./_components/note-item";
 
 
 
 export default function NotesPage() {
-  const notes: [] | undefined = [];
+  const notes = useQuery(api.notes.getUserNotes);
 
   return (
     <>
@@ -25,7 +29,9 @@ export default function NotesPage() {
           <EmptyNotesView />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {/* TODO: Render user's notes here */}
+            {notes.map(note => (
+              <NoteItem key={note._id} note={note} />
+            ))}
           </div>
         )}
       </div>

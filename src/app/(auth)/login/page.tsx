@@ -15,6 +15,10 @@ import PasswordInput from "@/components/global/password-input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleButton from "../_components/google-button";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 
@@ -27,10 +31,40 @@ export default function LoginPage() {
     },
   });
 
+  const { signIn } = useAuthActions();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
 
   async function onSubmit(values: SigninFormValues) {
-    // TODO: Implement your sign-in logic here
-    console.log("Sign In submitted with:", values);
+    setIsLoading(true);
+    try {
+      await signIn("password", {
+        email: values.email,
+        password: values.password,
+        flow: "signIn"
+      });
+
+      toast.success("Logged in successfully!");
+      router.push("/notes");
+    } catch (error) {
+      console.error("Login Error: ", error);
+      if (
+        error instanceof Error &&
+        (error.message.includes("InvalidAccountId") ||
+          error.message.includes("InvalidSecret"))
+      ) {
+        form.setError("root", {
+          type: "manual",
+          message: "Invalid email or password. Please try again.",
+        })
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -58,6 +92,7 @@ export default function LoginPage() {
                         placeholder="you@example.com"
                         {...field}
                         type="email"
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -69,16 +104,9 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Button asChild variant={'link'} className="p-0 h-auto font-normal">
-                        <Link href="/forgot-password" >
-                          Forgot Password?
-                        </Link>
-                      </Button>
-                    </div>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="Password" {...field} />
+                      <PasswordInput placeholder="Password" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -90,14 +118,14 @@ export default function LoginPage() {
                 </div>
               )}
               <input name="flow" type="hidden" value="signIn" />
-              <Button type="submit" className="w-full">
-                Sign In
+              <Button type="submit" className="w-full" disabled={isLoading} >
+                {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
-            <GoogleButton />
+            <GoogleButton disabled={isLoading} />
           </Form>
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Button asChild variant={'link'} className="p-0">
               <Link href="/signup">
                 Sign Up

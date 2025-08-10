@@ -15,6 +15,10 @@ import PasswordInput from "@/components/global/password-input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import GoogleButton from "../_components/google-button";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 
@@ -28,10 +32,36 @@ export default function SignupPage() {
     },
   });
 
+  const { signIn } = useAuthActions();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const router = useRouter();
+
 
   async function onSubmit(values: SignupFormValues) {
-    // TODO: Implement your sign-up logic here
-    console.log("Sign Up submitted with:", values);
+    setIsLoading(true);
+    try {
+      await signIn("password", {
+        email: values.email,
+        password: values.password,
+        flow: "signUp"
+      });
+
+      toast.success("Account created successfully!");
+      router.push("/notes");
+    } catch (error) {
+      console.error("Signup Error: ", error);
+      if (error instanceof Error && error.message.includes("UsernameExists")) {
+        form.setError("email", {
+          type: "manual",
+          message: "This email is already taken. Please use another.",
+        });
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -59,6 +89,7 @@ export default function SignupPage() {
                         placeholder="you@example.com"
                         {...field}
                         type="email"
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -72,7 +103,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" {...field} />
+                      <PasswordInput placeholder="••••••••" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -85,7 +116,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <PasswordInput placeholder="••••••••" {...field} />
+                      <PasswordInput placeholder="••••••••" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -101,7 +132,7 @@ export default function SignupPage() {
                 Sign Up
               </Button>
             </form>
-            <GoogleButton />
+            <GoogleButton disabled={isLoading} />
           </Form>
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}

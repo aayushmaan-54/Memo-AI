@@ -4,6 +4,12 @@ import { BrainCircuit } from "lucide-react";
 import { useState } from "react";
 import AIChatWidget from "./ai-chat-widget";
 
+export const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_URL?.replace(
+  /.cloud$/,
+  ".site"
+);
+
+
 
 export default function AIChatButton() {
   const [isChatWidgetOpen, setIsChatWidgetOpen] = useState(false);

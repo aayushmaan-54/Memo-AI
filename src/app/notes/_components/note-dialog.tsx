@@ -22,6 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useAction } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import toast from "react-hot-toast";
 
 
 
@@ -29,6 +32,8 @@ export default function NoteDialog(
   { isDialogOpen, setIsDialogOpen }:
     { isDialogOpen: boolean, setIsDialogOpen: (isDialogOpen: boolean) => void }
 ) {
+  const createNote = useAction(api.notesActions.createNote);
+
   const form = useForm<z.infer<typeof notesFormSchema>>({
     resolver: zodResolver(notesFormSchema),
     defaultValues: {
@@ -37,9 +42,23 @@ export default function NoteDialog(
     },
   });
 
+  const isCreatingNote = form.formState.isSubmitting;
+
 
   async function onSubmit(values: z.infer<typeof notesFormSchema>) {
-    // TODO: Create note from form input
+    try {
+      await createNote({
+        title: values.title,
+        content: values.content,
+      });
+
+      toast.success("Note created successfully!");
+      form.reset();
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating note: ", error);
+      toast.error("Error creating note, try again later!");
+    }
   }
 
   return (
@@ -82,7 +101,9 @@ export default function NoteDialog(
                 )}
               />
               <DialogFooter>
-                <Button type="submit">Save</Button>
+                <Button type="submit" disabled={isCreatingNote}>
+                  { isCreatingNote ? "Saving..." : "Save" }
+                </Button>
               </DialogFooter>
             </form>
           </Form>

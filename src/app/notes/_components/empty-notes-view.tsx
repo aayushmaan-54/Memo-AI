@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { FileText, Plus } from "lucide-react";
+import { FileText } from "lucide-react";
 import CreateNoteButton from "./create-note-button";
 
 

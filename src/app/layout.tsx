@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/global/header";
 import Footer from "@/components/global/footer";
 import ConvexClientProvider from "@/provider/convex-client-provider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 
 
@@ -97,24 +98,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(geistMono.variable, geistMono.className, 'antialiased font-mono bg-background text-foreground flex flex-col min-h-screen selection:bg-accent selection:text-foreground')}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ConvexClientProvider>
-            <Toaster position="top-center" reverseOrder={false} />
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </ConvexClientProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ConvexAuthNextjsServerProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={cn(geistMono.variable, geistMono.className, 'antialiased font-mono bg-background text-foreground flex flex-col min-h-screen selection:bg-accent selection:text-foreground')}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ConvexClientProvider>
+              <Toaster position="top-center" reverseOrder={false} />
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </ConvexClientProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ConvexAuthNextjsServerProvider>
   );
 }
