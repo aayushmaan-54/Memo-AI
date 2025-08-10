@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://memo-ai.vercel.app"),
+  metadataBase: new URL("https://memo-notes-ai.vercel.app"),
   title: {
     default: "Memo AI | Smart Notes with AI Assistant",
     template: "%s | Memo AI",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "Memo AI | Smart Notes with AI Assistant",
     description:
       "Memo AI helps you remember everything. Store notes and ask the AI to find anything — from passwords to plans — in seconds.",
-    url: "https://memo-ai.vercel.app",
+    url: "https://memo-notes-ai.vercel.app",
     siteName: "Memo AI",
     images: [
       {
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     yandex: "",
   },
   alternates: {
-    canonical: "https://memo-ai.vercel.app",
+    canonical: "https://memo-notes-ai.vercel.app",
   },
   authors: [{ name: "Aayushmaan Soni", url: "https://www.aayushmaan.me" }],
   keywords: [
